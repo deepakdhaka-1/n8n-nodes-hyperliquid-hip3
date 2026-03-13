@@ -18,7 +18,7 @@ export class HyperliquidHip3 implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Hyperliquid HIP-3',
     name: 'hyperliquidHip3',
-    icon: 'file:hyperliquidHip3.svg',
+    icon: 'file:hyperliquid.svg',
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
@@ -30,7 +30,6 @@ export class HyperliquidHip3 implements INodeType {
     outputs: ['main'],
     credentials: [
       {
-        // Completely separate credential — no link to the base hyperliquidApi
         name: 'hyperliquidHip3Api',
         required: true,
       },
@@ -40,7 +39,7 @@ export class HyperliquidHip3 implements INodeType {
       {
         displayName:
           '⚠️ This node trades HIP-3 builder-deployed perpetuals only (e.g. xyz:XYZ100). ' +
-          'Assets are automatically prefixed with the DEX name configured in credentials. ' +
+          'Assets are automatically prefixed with the DEX name set in credentials. ' +
           'For standard Hyperliquid perpetuals use the Hyperliquid node instead.',
         name: 'hip3Notice',
         type: 'notice',
@@ -100,8 +99,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['marketOrder', 'limitOrder', 'takeProfit', 'stopLoss', 'cancel', 'cancelByCloid', 'modifyOrder'],
           },
         },
-        description:
-          'Asset symbol WITHOUT the dex prefix — the DEX prefix from credentials is added automatically. E.g. enter "XYZ100" and it becomes "xyz:XYZ100".',
+        description: 'Symbol WITHOUT the dex prefix — it is added automatically from credentials. E.g. enter "XYZ100", node sends "xyz:XYZ100".',
       },
       {
         displayName: 'Side',
@@ -203,7 +201,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['limitOrder', 'marketOrder', 'modifyOrder'],
           },
         },
-        description: 'Whether order can only reduce an existing position',
+        description: 'Whether this order can only reduce an existing position',
       },
       {
         displayName: 'Order ID',
@@ -242,8 +240,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['scheduleCancel'],
           },
         },
-        description:
-          'Unix timestamp (ms) to cancel all orders. Set to 0 to remove scheduled cancel. Must be at least 5 seconds in the future.',
+        description: 'Unix timestamp (ms) to cancel all orders. Set to 0 to remove a scheduled cancel. Must be at least 5 seconds in the future.',
       },
 
       // ============================================================= POSITION
@@ -274,8 +271,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['updateLeverage', 'updateIsolatedMargin', 'closePosition'],
           },
         },
-        description:
-          'Asset symbol WITHOUT dex prefix — prefix is added automatically from credentials.',
+        description: 'Symbol WITHOUT dex prefix — prefix is added automatically from credentials.',
       },
       {
         displayName: 'Slippage %',
@@ -289,7 +285,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['closePosition'],
           },
         },
-        description: 'Maximum slippage tolerance for close position market order',
+        description: 'Maximum slippage tolerance for the close market order',
       },
       {
         displayName: 'Leverage',
@@ -303,15 +299,15 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['updateLeverage'],
           },
         },
-        description: 'Note: many HIP-3 assets are isolated-only. Check asset metadata for max leverage.',
+        description: 'Many HIP-3 assets have lower max leverage — check asset metadata first.',
       },
       {
         displayName: 'Margin Mode',
         name: 'marginMode',
         type: 'options',
         options: [
-          { name: 'Cross', value: 'cross' },
           { name: 'Isolated', value: 'isolated' },
+          { name: 'Cross', value: 'cross' },
         ],
         default: 'isolated',
         displayOptions: {
@@ -320,7 +316,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['updateLeverage'],
           },
         },
-        description: 'Many HIP-3 assets are isolated-margin only (onlyIsolated: true)',
+        description: 'Most HIP-3 assets are isolated-margin only (onlyIsolated: true in metadata)',
       },
       {
         displayName: 'Position Side',
@@ -350,7 +346,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['updateIsolatedMargin'],
           },
         },
-        description: 'Amount to add (positive) or remove (negative) from isolated margin in USD',
+        description: 'Amount in USD to add (positive) or remove (negative) from isolated margin',
       },
 
       // ============================================================== ACCOUNT
@@ -406,14 +402,14 @@ export class HyperliquidHip3 implements INodeType {
           { name: 'Get All Prices', value: 'getAllMids', action: 'Get all mid prices on this DEX' },
           { name: 'Get Asset Price', value: 'getAssetPrice', action: 'Get price for a specific asset' },
           { name: 'Get Asset Metadata', value: 'getMeta', action: 'Get DEX asset metadata (szDecimals, maxLeverage, onlyIsolated)' },
-          { name: 'Get Meta And Asset Contexts', value: 'getMetaAndAssetCtxs', action: 'Get metadata with mark price, OI, funding' },
+          { name: 'Get Meta And Asset Contexts', value: 'getMetaAndAssetCtxs', action: 'Get metadata with mark price, OI and funding' },
           { name: 'Get Order Book', value: 'getOrderBook', action: 'Get L2 order book' },
           { name: 'Get Candle Snapshot', value: 'getCandleSnapshot', action: 'Get OHLCV candle history' },
           { name: 'Get Funding History', value: 'getFundingHistory', action: 'Get historical funding rates' },
           { name: 'Get Predicted Fundings', value: 'getPredictedFundings', action: 'Get predicted funding rates' },
           { name: 'Get Recent Trades', value: 'getRecentTrades', action: 'Get recent trades' },
           { name: 'List All DEXes', value: 'getPerpDexs', action: 'List all available HIP-3 DEXes' },
-          { name: 'Get DEX Limits', value: 'getPerpDexLimits', action: 'Get perp DEX limits and caps' },
+          { name: 'Get DEX Limits', value: 'getPerpDexLimits', action: 'Get perp DEX limits and caps for this DEX' },
         ],
         default: 'getAllMids',
       },
@@ -429,7 +425,7 @@ export class HyperliquidHip3 implements INodeType {
             operation: ['getAssetPrice', 'getOrderBook', 'getCandleSnapshot', 'getFundingHistory', 'getRecentTrades'],
           },
         },
-        description: 'Asset symbol WITHOUT dex prefix — prefix is added automatically.',
+        description: 'Symbol WITHOUT dex prefix — prefix is added automatically.',
       },
       {
         displayName: 'Interval',
@@ -526,7 +522,7 @@ export class HyperliquidHip3 implements INodeType {
       vaultAddress || undefined,
     );
 
-    // ---- fetch DEX metadata once for asset index lookups
+    // ---- fetch DEX metadata once (used for asset index lookups + onlyIsolated checks)
     let meta: Meta;
     try {
       meta = await client.getMeta();
@@ -534,19 +530,18 @@ export class HyperliquidHip3 implements INodeType {
       throw new NodeOperationError(
         this.getNode(),
         `Failed to fetch HIP-3 DEX metadata for "${dexName}": ${error}. ` +
-        'Check that the DEX name is correct and the network is reachable.',
+        'Verify the DEX name in credentials and that the network is reachable.',
       );
     }
 
     // ---- helpers
 
     /**
-     * Resolve asset index from symbol.
-     * Accepts both bare symbol ("XYZ100") and prefixed ("xyz:XYZ100").
-     * Meta names from HIP-3 are stored as "dex:SYMBOL" in universe.
+     * Resolve asset index from a bare symbol or prefixed coin string.
+     * meta.universe names for HIP-3 assets are stored as "dex:SYMBOL".
      */
     const getAssetIndex = (symbol: string): number => {
-      const coin = client.formatCoin(symbol); // ensures "dex:SYMBOL"
+      const coin = client.formatCoin(symbol); // "XYZ100" → "xyz:XYZ100"
       const index = meta.universe.findIndex(
         (asset) => asset.name.toUpperCase() === coin.toUpperCase(),
       );
@@ -554,7 +549,7 @@ export class HyperliquidHip3 implements INodeType {
         const available = meta.universe.map((a) => a.name).join(', ');
         throw new NodeOperationError(
           this.getNode(),
-          `Unknown asset "${coin}" on DEX "${dexName}". Available: ${available}`,
+          `Unknown asset "${coin}" on DEX "${dexName}". Available assets: ${available}`,
         );
       }
       return index;
@@ -660,7 +655,7 @@ export class HyperliquidHip3 implements INodeType {
               b: side === 'buy',
               p: formatPrice(triggerPrice),
               s: formatNumber(size),
-              r: true,
+              r: true, // TP/SL always reduce only
               t: orderType,
             };
 
@@ -713,10 +708,19 @@ export class HyperliquidHip3 implements INodeType {
             if (openOrders.length === 0) {
               result = { message: `No open orders on DEX "${dexName}"` };
             } else {
-              const cancels = openOrders.map((order) => ({
-                a: getAssetIndex(order.coin),
-                o: order.oid,
-              }));
+              // order.coin is already "dex:SYMBOL" — look up directly, don't re-prefix via getAssetIndex
+              const cancels = openOrders.map((order) => {
+                const idx = meta.universe.findIndex(
+                  (a) => a.name.toUpperCase() === order.coin.toUpperCase(),
+                );
+                if (idx === -1) {
+                  throw new NodeOperationError(
+                    this.getNode(),
+                    `cancelAll: unknown asset "${order.coin}" returned by open orders`,
+                  );
+                }
+                return { a: idx, o: order.oid };
+              });
               result = await client.exchange({ type: 'cancel', cancels });
             }
           }
@@ -752,7 +756,6 @@ export class HyperliquidHip3 implements INodeType {
 
           if (operation === 'getPositions') {
             const state = await client.getClearinghouseState() as ClearinghouseState;
-            // Filter to only non-zero positions
             result = state.assetPositions.filter(
               (pos: AssetPosition) => parseFloat(pos.position.szi) !== 0,
             );
@@ -805,7 +808,7 @@ export class HyperliquidHip3 implements INodeType {
             const leverage = this.getNodeParameter('leverage', i) as number;
             const marginMode = this.getNodeParameter('marginMode', i) as string;
 
-            // Warn if trying cross on an onlyIsolated asset
+            // Guard: prevent cross margin on onlyIsolated assets
             const coin = client.formatCoin(symbol);
             const assetMeta = meta.universe.find(
               (a) => a.name.toUpperCase() === coin.toUpperCase(),
@@ -813,7 +816,7 @@ export class HyperliquidHip3 implements INodeType {
             if (assetMeta?.onlyIsolated && marginMode === 'cross') {
               throw new NodeOperationError(
                 this.getNode(),
-                `Asset ${coin} on DEX "${dexName}" only supports isolated margin. Switch Margin Mode to Isolated.`,
+                `Asset ${coin} on DEX "${dexName}" only supports isolated margin. Change Margin Mode to Isolated.`,
               );
             }
 
@@ -883,15 +886,11 @@ export class HyperliquidHip3 implements INodeType {
             const symbol = this.getNodeParameter('marketAsset', i) as string;
             const coin = client.formatCoin(symbol);
             const mids = await client.getAllMids();
-            result = {
-              dex: dexName,
-              asset: coin,
-              price: mids[coin] ?? null,
-            };
+            result = { dex: dexName, asset: coin, price: mids[coin] ?? null };
           }
 
           if (operation === 'getMeta') {
-            result = meta; // already fetched with dex param
+            result = meta;
           }
 
           if (operation === 'getMetaAndAssetCtxs') {
@@ -910,7 +909,6 @@ export class HyperliquidHip3 implements INodeType {
             const interval = this.getNodeParameter('candleInterval', i) as string;
             const startTime = this.getNodeParameter('candleStartTime', i) as number;
             const endTime = this.getNodeParameter('candleEndTime', i) as number;
-
             result = await client.getCandleSnapshot(coin, interval, startTime, endTime || Date.now());
           }
 
@@ -919,7 +917,6 @@ export class HyperliquidHip3 implements INodeType {
             const coin = client.formatCoin(symbol);
             const startTime = this.getNodeParameter('candleStartTime', i) as number;
             const endTime = this.getNodeParameter('candleEndTime', i) as number;
-
             result = await client.getFundingHistory(coin, startTime, endTime || undefined);
           }
 
@@ -940,6 +937,14 @@ export class HyperliquidHip3 implements INodeType {
           if (operation === 'getPerpDexLimits') {
             result = await client.getPerpDexLimits();
           }
+        }
+
+        if (result === undefined) {
+          throw new NodeOperationError(
+            this.getNode(),
+            `Operation "${operation}" on resource "${resource}" returned no result. Check your parameters.`,
+            { itemIndex: i },
+          );
         }
 
         returnData.push({
