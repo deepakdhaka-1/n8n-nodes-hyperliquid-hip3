@@ -312,6 +312,7 @@ export class HyperliquidHip3Client {
 
   /**
    * Format a raw symbol like "XYZ100" into "xyz:XYZ100" using this client's dex.
+   * Already-prefixed strings ("xyz:XYZ100") are returned unchanged.
    */
   formatCoin(symbol: string): string {
     // Already prefixed — don't double-prefix
