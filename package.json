@@ -1,0 +1,61 @@
+{
+  "name": "n8n-nodes-hyperliquid-hip3",
+  "version": "0.1.0",
+  "description": "n8n community node for Hyperliquid HIP-3 builder-deployed perpetual DEXes (e.g. xyz:XYZ100). Trade custom perps on Hyperliquid.",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "hyperliquid",
+    "hip3",
+    "hip-3",
+    "builder-perps",
+    "defi",
+    "perpetual",
+    "trading",
+    "crypto",
+    "automation"
+  ],
+  "license": "BUSL-1.1",
+  "homepage": "https://github.com/deepakdhaka-1/n8n-nodes-hyperliquid-hip3",
+  "author": {
+    "name": "Deepak Dhaka",
+    "email": "gxyz717@gnail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/deepakdhaka-1/n8n-nodes-hyperliquid-hip3.git"
+  },
+  "engines": {
+    "node": ">=20.15"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "lint": "eslint nodes credentials --ext .ts",
+    "lintfix": "eslint nodes credentials --ext .ts --fix",
+    "prepublishOnly": "echo skip"
+  },
+  "files": ["dist"],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/HyperliquidHip3Api.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/HyperliquidHip3/HyperliquidHip3.node.js"
+    ]
+  },
+  "dependencies": {
+    "ethers": "^6.9.0",
+    "@msgpack/msgpack": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.57.0",
+    "gulp": "^4.0.2",
+    "n8n-workflow": "*",
+    "typescript": "~5.4.0"
+  }
+}
