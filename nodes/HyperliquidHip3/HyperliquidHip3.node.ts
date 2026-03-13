@@ -18,7 +18,7 @@ export class HyperliquidHip3 implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Hyperliquid HIP-3',
     name: 'hyperliquidHip3',
-    icon: 'file:hyperliquid.svg',
+    icon: 'file:hyperliquidHip3.svg',
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
