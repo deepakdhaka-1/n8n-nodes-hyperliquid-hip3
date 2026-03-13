@@ -537,22 +537,33 @@ export class HyperliquidHip3 implements INodeType {
     // ---- helpers
 
     /**
-     * Resolve asset index from a bare symbol or prefixed coin string.
-     * meta.universe names for HIP-3 assets are stored as "dex:SYMBOL".
+     * Resolve asset index for a HIP-3 asset.
+     *
+     * HIP-3 asset indexes are NOT the position in the DEX meta array.
+     * They are: 11000 + position_in_dex_meta
+     *
+     * e.g. XYZ100 at position 0 in xyz meta → asset index 11000
+     *      TSLA   at position 1 in xyz meta → asset index 11001
+     *
+     * Using the raw position (0, 1, 2...) would map to native Hyperliquid
+     * assets (BTC, ETH, etc.) causing orders to land on the wrong coin.
      */
+    const HIP3_ASSET_OFFSET = 11000;
+
     const getAssetIndex = (symbol: string): number => {
       const coin = client.formatCoin(symbol); // "XYZ100" → "xyz:XYZ100"
-      const index = meta.universe.findIndex(
+      const positionInDexMeta = meta.universe.findIndex(
         (asset) => asset.name.toUpperCase() === coin.toUpperCase(),
       );
-      if (index === -1) {
+      if (positionInDexMeta === -1) {
         const available = meta.universe.map((a) => a.name).join(', ');
         throw new NodeOperationError(
           this.getNode(),
           `Unknown asset "${coin}" on DEX "${dexName}". Available assets: ${available}`,
         );
       }
-      return index;
+      // HIP-3 global asset index = 11000 + position in this DEX's meta universe
+      return HIP3_ASSET_OFFSET + positionInDexMeta;
     };
 
     const formatNumber = (value: number): string =>
@@ -709,17 +720,18 @@ export class HyperliquidHip3 implements INodeType {
               result = { message: `No open orders on DEX "${dexName}"` };
             } else {
               // order.coin is already "dex:SYMBOL" — look up directly, don't re-prefix via getAssetIndex
+              // Must apply HIP3_ASSET_OFFSET (11000 + position) same as getAssetIndex
               const cancels = openOrders.map((order) => {
-                const idx = meta.universe.findIndex(
+                const positionInDexMeta = meta.universe.findIndex(
                   (a) => a.name.toUpperCase() === order.coin.toUpperCase(),
                 );
-                if (idx === -1) {
+                if (positionInDexMeta === -1) {
                   throw new NodeOperationError(
                     this.getNode(),
                     `cancelAll: unknown asset "${order.coin}" returned by open orders`,
                   );
                 }
-                return { a: idx, o: order.oid };
+                return { a: HIP3_ASSET_OFFSET + positionInDexMeta, o: order.oid };
               });
               result = await client.exchange({ type: 'cancel', cancels });
             }
