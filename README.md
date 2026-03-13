@@ -18,7 +18,7 @@ This node handles the `dex` scoping automatically — you enter just the symbol 
 
 ### Order Operations
 - **Place Market Order** — Execute market orders with slippage protection
-- **Place LiBUSL-1.1 Order** — Place liBUSL-1.1 orders with GTC, IOC, or Post Only (ALO) time-in-force
+- **Place Limit1 Order** — Place limit orders with GTC, IOC, or Post Only (ALO) time-in-force
 - **Place Take Profit** — Set take profit trigger orders
 - **Place Stop Loss** — Set stop loss trigger orders
 - **Modify Order** — Modify an existing open order
