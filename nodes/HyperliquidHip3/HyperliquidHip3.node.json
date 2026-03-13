@@ -1,0 +1,22 @@
+{
+  "node": "n8n-nodes-hyperliquid.hyperliquid",
+  "nodeVersion": "1.0",
+  "codexVersion": "1.0",
+  "categories": ["Finance & Accounting"],
+  "resources": {
+    "credentialDocumentation": [
+      {
+        "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api"
+      }
+    ],
+    "primaryDocumentation": [
+      {
+        "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/"
+      }
+    ]
+  },
+  "alias": ["trading", "perpetual", "futures", "dex", "crypto", "defi"],
+  "subcategories": {
+    "Finance & Accounting": ["Trading"]
+  }
+}
